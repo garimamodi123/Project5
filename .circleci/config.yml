@@ -17,6 +17,7 @@ jobs:
             - run:
                 name: install dependencies
                 command: |
+                    sudo apt-get install python-venv
                     python3 -m venv project5
                     . project5/bin/activate
                     make install
