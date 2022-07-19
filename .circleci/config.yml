@@ -1,0 +1,109 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@2.1.2
+
+jobs:
+    Build_Lint_Chk:
+        docker:
+         
+            - image: python:3.7.3-stretch
+
+        working_directory: ~/app
+
+        steps:
+            - checkout
+            
+            - run:
+                name: install dependencies
+                command: |
+                    python3 -m venv project5
+                    . project5/bin/activate
+                    make install
+            
+            - run:
+                name: run lint
+                command: |
+                    . project5/bin/activate
+                    make lint
+
+    Build_Push_DockerImage:
+        docker:
+            
+            - image: cimg/base:2022.06
+              auth:
+                username: $DOCKER_USERNAME
+                password: $DOCKER_PASS
+        steps:
+            - checkout
+            - setup_remote_docker:
+                version: 20.10.14
+            - run:
+                name: To built the dockr img and then run it
+                command: |
+                    
+                    docker --version
+                    docker build . --tag project5
+                    docker images project5
+                    docker run -p 80:5000 project5
+                    
+            - run:
+                name: To push the dockr img to dockerhub
+                command: |        
+                    
+                    dockerpath=dockdockgg/project5
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USERNAME --password-stdin
+                    docker tag project5 $dockerpath
+                    docker push $dockerpath
+
+    AWS_Kube_Cluster_Built_and_Deploy:
+        docker:
+            - image: cimg/base:2022.06
+        working_directory: ~/app
+        steps:
+            - checkout
+            - run:
+                name: Kube Config Dependencies installing
+                command: |
+                    sudo apt-get update && sudo apt-get upgrade
+
+                    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                    unzip awscliv2.zip
+                    sudo ./aws/install
+                    
+                    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+                    sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+                    ls -l /usr/local/bin/kubectl
+                    
+                    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+                    sudo mv /tmp/eksctl /usr/local/bin
+                    ls -l /usr/local/bin/eksctl
+            - run:
+                name: Kube Clustr getting built 
+                command: |
+                    export TERM=xterm
+                    aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                    aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+                    aws configure set default.region $AWS_DEFAULT_REGION
+                    nohup aws cloudformation list-exports > output.txt
+                    chmod 755 aws_kube_infra.sh
+                    ./aws_kube_infra.sh
+                    cat output.txt
+    
+            - run:
+                name: From DockHub to KubeCluster Deployment
+                command: |
+                    kubectl config view
+                    kubectl get nodes
+                    kubectl create deploy project5 --image=dockdockgg/capstone:latest
+                    kubectl get deploy,rs,svc,pods
+
+workflows:
+    default:
+        jobs:
+            - Build_Lint_Chk
+            - Build_Push_DockerImage:
+                requires: [ Build_Lint_Chk ]
+            - AWS_Kube_Cluster_Built_and_Deploy:
+                requires: [ Build_Push_DockerImage ]
+            
