@@ -55,7 +55,7 @@ jobs:
                 name: To push the dockr img to dockerhub
                 command: |        
                     
-                    dockerpath=dockdockgg/project5
+                    dockerpath=garimamodi/project5
                     echo $DOCKER_PASS | docker login -u $DOCKER_USERNAME --password-stdin
                     docker tag project5 $dockerpath
                     docker push $dockerpath
