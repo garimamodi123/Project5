@@ -1,4 +1,4 @@
-occurance=$(grep -i eksctl-project5 output.txt | wc -l)
+occurance=$(grep -i eksctl-projectii output.txt | wc -l)
 if [[ $occurance -gt 0 ]]
     then 
     echo "Since Infra is already existing hence not creating Clstr"
