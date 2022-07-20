@@ -9,7 +9,7 @@ jobs:
          
             - image: python:3.7.3-stretch
 
-        working_directory: ~/app
+        working_directory: ~/repo
 
         steps:
             - checkout
@@ -17,7 +17,7 @@ jobs:
             - run:
                 name: install dependencies
                 command: |
-                    apt-get install python-venv
+                    # apt-get install python-venv
                     python3 -m venv project5
                     . project5/bin/activate
                     make install
@@ -60,7 +60,7 @@ jobs:
     AWS_Kube_Cluster_Built_and_Deploy:
         docker:
             - image: cimg/base:2022.06
-        working_directory: ~/app
+        working_directory: ~/repo
         steps:
             - checkout
             - run:
