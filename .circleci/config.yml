@@ -28,7 +28,7 @@ jobs:
             - run:
                 name: run lint
                 command: |
-                    . project5/bin/activate
+                    source ~/.devops/bin/activate
                     make lint
 
     Build_Push_DockerImage:
