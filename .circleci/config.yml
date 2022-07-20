@@ -60,11 +60,9 @@ jobs:
                 command: |        
                     
                     dockerpath=garimamodi/project5
-                    echo "Docker ID and Image: $dockerpath" 
-                    docker login
-                    echo "login docker"
+                    echo "Docker pass: $DOCKER_PASS" 
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USERNAME --password-stdin
                     docker tag local-image:latest garimamodi/project5:latest
-                    #echo $DOCKER_PASS | docker login -u $DOCKER_USERNAME --password-stdin
                     #docker tag project5 $dockerpath
                     docker push $dockerpath
                     #docker tag local-image:tagname new-repo:tagname
