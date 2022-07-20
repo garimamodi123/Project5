@@ -28,7 +28,7 @@ jobs:
                     source ~/.devops/bin/activate
                     make lint
 
-    Build&Push_DockerImage:
+    BuildPush_DockerImage:
         docker:
             
             - image: cimg/base:2022.06
@@ -44,7 +44,7 @@ jobs:
             - setup_remote_docker:
                 version: 20.10.14
             - run:
-                name: To built the dockr img and then run it
+                name: Build the docker image and run it
                 command: |
                     
                     docker --version
@@ -53,13 +53,12 @@ jobs:
                     docker run -p 80:5000 project5
                     
             - run:
-                name: To push the dockr img to dockerhub
+                name: Push the docker image to dockerhub
                 command: |        
                     
                     dockerpath=garimamodi/project5
                     echo "Docker pass: $DOCKER_PASS" 
                     echo $DOCKER_PASS | docker login -u $DOCKER_USERNAME --password-stdin
-                    #docker tag local-image:latest garimamodi/project5:latest
                     docker tag project5 $dockerpath
                     docker push $dockerpath
                     #docker  tag local-image:tagname new-repo:tagname
@@ -72,7 +71,7 @@ jobs:
         steps:
             - checkout
             - run:
-                name: Kube Config Dependencies installing
+                name: Kube Dependencies installation
                 command: |
                     sudo apt-get update && sudo apt-get upgrade
 
@@ -88,7 +87,7 @@ jobs:
                     sudo mv /tmp/eksctl /usr/local/bin
                     ls -l /usr/local/bin/eksctl
             - run:
-                name: Kube Clustr getting built 
+                name: Kube Cluster getting built 
                 command: |
                     export TERM=xterm
                     aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
@@ -100,7 +99,7 @@ jobs:
                     cat output.txt
     
             - run:
-                name: From DockHub to KubeCluster Deployment
+                name: From DockHub to Kube Cluster Deployment
                 command: |
                     kubectl config view
                     kubectl get nodes
@@ -111,8 +110,8 @@ workflows:
     default:
         jobs:
             - Lint_Check
-            - Build_Push_DockerImage:
+            - BuildPush_DockerImage:
                 requires: [ Lint_Check ]
             - AWS_Kube_Cluster_Built_Deploy:
-                requires: [ Build&Push_DockerImage ]
+                requires: [ BuildPush_DockerImage ]
             
