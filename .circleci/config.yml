@@ -37,9 +37,27 @@ jobs:
             - image: cimg/base:2022.06
               auth:
                 username: $DOCKER_USERNAME
-                echo $(DOCKER_USERNAME)
                 password: $DOCKER_PASS
-                echo $(DOCKER_PASS)
+                
+                # Assumes that an image is built via `run_docker.sh`
+
+# Step 1:
+# Create dockerpath
+#dockerpath="garimamodi/project4_udacityapi"
+dockerpath="garimamodi/project4_udacity"
+
+
+# Step 2:  
+# Authenticate & tag
+echo "Docker ID and Image: $dockerpath" 
+docker login
+docker tag 8ef3cf703e46 garimamodi/project4_udacity:latest
+
+# Step 3:
+# Push image to a docker repository
+#docker push <hostname>:<repository-port>/<image>:<tag>
+docker push garimamodi/project4_udacity:latest
+                
         steps:
             - checkout
             - setup_remote_docker:
@@ -58,8 +76,11 @@ jobs:
                 command: |        
                     
                     dockerpath=garimamodi/project5
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker tag project5 $dockerpath
+                    echo "Docker ID and Image: $dockerpath" 
+                    docker login
+                    docker tag local-image:latest garimamodi/project5:latest
+                    #echo $DOCKER_PASS | docker login -u $DOCKER_USERNAME --password-stdin
+                    #docker tag project5 $dockerpath
                     docker push $dockerpath
                     #docker tag local-image:tagname new-repo:tagname
                     #docker push new-repo:tagname
