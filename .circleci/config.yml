@@ -62,8 +62,8 @@ jobs:
                     dockerpath=garimamodi/project5
                     echo "Docker pass: $DOCKER_PASS" 
                     echo $DOCKER_PASS | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker tag local-image:latest garimamodi/project5:latest
-                    #docker tag project5 $dockerpath
+                    #docker tag local-image:latest garimamodi/project5:latest
+                    docker tag project5 $dockerpath
                     docker push $dockerpath
                     #docker  tag local-image:tagname new-repo:tagname
                     #docker push new-repo:tagname
