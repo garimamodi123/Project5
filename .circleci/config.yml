@@ -103,7 +103,7 @@ jobs:
                 command: |
                     kubectl config view
                     kubectl get nodes
-                    kubectl create deploy project5 --image=dockdockgg/capstone:latest
+                    kubectl create deploy project5 --image=garimamodi/project5:latest
                     kubectl get deploy,rs,svc,pods
 
 workflows:
