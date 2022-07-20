@@ -4,7 +4,7 @@ orbs:
   docker: circleci/docker@2.1.2
 
 jobs:
-    Build_Lint_Chk:
+    Lint_Check:
         docker:
          
             - image: python:3.7.3-stretch
@@ -20,9 +20,6 @@ jobs:
                     # apt-get install python-venv
                     python3 -m venv ~/.devops
                     source ~/.devops/bin/activate
-                    #python3 -m venv project5
-                    #echo ("hello")
-                    #. project5/bin/activate
                     make install
             
             - run:
@@ -31,7 +28,7 @@ jobs:
                     source ~/.devops/bin/activate
                     make lint
 
-    Build_Push_DockerImage:
+    Build&Push_DockerImage:
         docker:
             
             - image: cimg/base:2022.06
@@ -68,7 +65,7 @@ jobs:
                     #docker  tag local-image:tagname new-repo:tagname
                     #docker push new-repo:tagname
 
-    AWS_Kube_Cluster_Built_and_Deploy:
+    AWS_Kube_Cluster_Built_Deploy:
         docker:
             - image: cimg/base:2022.06
         working_directory: ~/repo
@@ -113,9 +110,9 @@ jobs:
 workflows:
     default:
         jobs:
-            - Build_Lint_Chk
+            - Lint_Check
             - Build_Push_DockerImage:
-                requires: [ Build_Lint_Chk ]
-            - AWS_Kube_Cluster_Built_and_Deploy:
-                requires: [ Build_Push_DockerImage ]
+                requires: [ Lint_Check ]
+            - AWS_Kube_Cluster_Built_Deploy:
+                requires: [ Build&Push_DockerImage ]
             
