@@ -19,7 +19,7 @@ jobs:
                 command: |
                     # apt-get install python-venv
                     python3 -m venv project5
-                    print("hello")
+                    echo ("hello")
                     . project5/bin/activate
                     make install
             
