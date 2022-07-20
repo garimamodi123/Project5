@@ -62,6 +62,7 @@ jobs:
                     dockerpath=garimamodi/project5
                     echo "Docker ID and Image: $dockerpath" 
                     docker login
+                    echo "login docker"
                     docker tag local-image:latest garimamodi/project5:latest
                     #echo $DOCKER_PASS | docker login -u $DOCKER_USERNAME --password-stdin
                     #docker tag project5 $dockerpath
